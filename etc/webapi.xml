@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * File: webapi.xml
+ *
+ 
+ */
+ -->
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+
+    <route url="/V1/paylane/secure-form/build-payload" method="GET">
+        <service class="PeP\PaymentGateway\Api\SecureForm\PayloadBuilderInterface" method="build"/>
+        <resources>
+            <resource ref="anonymous" />
+        </resources>
+    </route>
+
+</routes>

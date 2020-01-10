@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * File: paylane_error_mapping.xml
+ *
+ 
+ */
+ -->
+<mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Payment:etc/error_mapping.xsd">
+    <message_list>
+        <message code="302" translate="true">Direct debit is not accessible for this country [account_country_code].</message>
+        <message code="303" translate="true">Direct debit declined.	</message>
+        <message code="312" translate="true">Account holder name is not valid.</message>
+        <message code="313" translate="true">Customer name is not valid.</message>
+        <message code="314" translate="true">Customer e-mail is not valid.</message>
+        <message code="315" translate="true">Customer address (street and house) is not valid.</message>
+        <message code="316" translate="true">Customer city is not valid.</message>
+        <message code="317" translate="true">Customer zip code is not valid.</message>
+        <message code="318" translate="true">Customer state is not valid.</message>
+        <message code="319" translate="true">Customer country is not valid.</message>
+        <message code="320" translate="true">Amount is not valid.</message>
+        <message code="321" translate="true">Amount is too low.</message>
+        <message code="322" translate="true">Currency code is not valid.</message>
+        <message code="323" translate="true">Customer IP address is not valid.</message>
+        <message code="324" translate="true">Description is not valid.</message>
+        <message code="325" translate="true">Account country is not valid.</message>
+        <message code="326" translate="true">Bank code (SWIFT/BIC/BLZ) is not valid.</message>
+        <message code="327" translate="true">Account number is not valid.</message>
+        <message code="401" translate="true">Multiple same transactions lock triggered. Wait [number of seconds] s and try again.</message>
+        <message code="402" translate="true">Payment gateway problem. Please try again later.</message>
+        <message code="403" translate="true">Card declined.</message>
+        <message code="404" translate="true">Transaction in this currency [currency code] is not allowed.</message>
+        <message code="405" translate="true">Unknown payment method or method not set.</message>
+        <message code="406" translate="true">More than one payment method provided. Only one payment method is allowed.</message>
+        <message code="407" translate="true">Capture later not possible with this payment method.</message>
+        <message code="408" translate="true">Feature [feature] not available for this payment method.</message>
+        <message code="409" translate="true">Overriding default [feature] not allowed for this merchant account.</message>
+        <message code="410" translate="true">Unsupported payment method.</message>
+        <message code="411" translate="true">Card number format is not valid.</message>
+        <message code="412" translate="true">Card expiration year is not valid.</message>
+        <message code="413" translate="true">Card expiration month is not valid.</message>
+        <message code="414" translate="true">Card expiration year in the past.</message>
+        <message code="415" translate="true">Card has expired.</message>
+        <message code="416" translate="true">Card code (CVV2/CVC2/CID) format is not valid.</message>
+        <message code="417" translate="true">Name on card is not valid.</message>
+        <message code="418" translate="true">Cardholder name is not valid.</message>
+        <message code="419" translate="true">Cardholder e-mail is not valid.</message>
+        <message code="420" translate="true">Cardholder address (street and house) is not valid.</message>
+        <message code="421" translate="true">Cardholder city is not valid.</message>
+        <message code="422" translate="true">Cardholder zip is not valid.</message>
+        <message code="423" translate="true">Cardholder state is not valid.</message>
+        <message code="424" translate="true">Cardholder country is not valid</message>
+        <message code="425" translate="true">Amount is not valid.</message>
+        <message code="426" translate="true">Amount is too low.</message>
+        <message code="427" translate="true">Currency code is not valid.</message>
+        <message code="428" translate="true">Client IP is not valid.</message>
+        <message code="429" translate="true">Description is not valid.</message>
+        <message code="430" translate="true">Unknown card type or card number invalid.</message>
+        <message code="431" translate="true">Card issue number is not valid.</message>
+        <message code="432" translate="true">Fraud check on is not valid.</message>
+        <message code="433" translate="true">AVS level is not valid.</message>
+        <message code="441" translate="true">Sale Authorization ID is not valid.</message>
+        <message code="442" translate="true">Sale Authorization ID not found or the authorization has been closed.</message>
+        <message code="443" translate="true">Capture sale amount greater than the authorization amount.</message>
+        <message code="470" translate="true">Resale without card code is not allowed for this merchant account.</message>
+        <message code="471" translate="true">Sale ID is not valid.</message>
+        <message code="472" translate="true">Resale amount is not valid.</message>
+        <message code="473" translate="true">Amount is too low</message>
+        <message code="474" translate="true">Resale currency code is not valid.</message>
+        <message code="475" translate="true">Resale description is not valid.</message>
+        <message code="476" translate="true">Sale ID not found.</message>
+        <message code="477" translate="true">Cannot resale. Chargeback assigned to Sale ID.</message>
+        <message code="478" translate="true">Cannot resale this sale.</message>
+        <message code="479" translate="true">Card has expired.</message>
+        <message code="480" translate="true">Cannot resale. Reversal assigned to Sale ID.</message>
+        <message code="481" translate="true">Sale ID is not valid.</message>
+        <message code="482" translate="true">Refund amount is not valid.</message>
+        <message code="483" translate="true">Refund reason is not valid.</message>
+        <message code="484" translate="true">Sale ID not found.</message>
+        <message code="485" translate="true">Cannot refund. Chargeback assigned to Sale ID.</message>
+        <message code="486" translate="true">Cannot refund. Exceeded available refund amount.</message>
+        <message code="487" translate="true">Cannot refund. Sale is already completely refunded.</message>
+        <message code="488" translate="true">Cannot refund this sale.</message>
+        <message code="491" translate="true">Sale ID list is not set or empty</message>
+        <message code="492" translate="true">Sale ID list is too large (more than 100).</message>
+        <message code="493" translate="true">Sale ID [sale_id] at position [number] is not valid.</message>
+        <message code="501" translate="true">Internal server error. Please try again later.</message>
+        <message code="502" translate="true">Payment gateway error. Please try again later.</message>
+        <message code="503" translate="true">Payment method [payment_method_name] not allowed for this merchant account.</message>
+        <message code="505" translate="true">This merchant account is inactive.</message>
+        <message code="601" translate="true">Fraud attempt detected. Score is: [score] (range is 0-100).</message>
+        <message code="611" translate="true">Blacklisted account number found.</message>
+        <message code="612" translate="true">Blacklisted card country found.</message>
+        <message code="613" translate="true">Blacklisted card number found.</message>
+        <message code="614" translate="true">Blacklisted customer country found.</message>
+        <message code="615" translate="true">Blacklisted customer email found.</message>
+        <message code="616" translate="true">Blacklisted customer IP address found.</message>
+        <message code="701" translate="true">3-D Secure authentication server error. Please try again later or use card not enrolled in 3-D Secure.</message>
+        <message code="702" translate="true">3-D Secure authentication server problem. Please try again later or use card not enrolled in 3-D Secure.</message>
+        <message code="703" translate="true">3-D Secure authentication failed. Credit card cannot be accepted for payment.</message>
+        <message code="704" translate="true">3-D Secure authentication failed. Card declined</message>
+        <message code="711" translate="true">Card number format is not valid.</message>
+        <message code="712" translate="true">Card expiration year is not valid.</message>
+        <message code="713" translate="true">Card expiration month is not valid.</message>
+        <message code="714" translate="true">Card has expired.</message>
+        <message code="715" translate="true">Amount is not valid.</message>
+        <message code="716" translate="true">Currency code is not valid.</message>
+        <message code="717" translate="true">Back URL is not valid.</message>
+        <message code="718" translate="true">Unknown card type or card number invalid.</message>
+        <message code="719" translate="true">Card issue number is not valid.</message>
+        <message code="720" translate="true">Unable to verify enrollment for 3-D Secure. You can perform a normal payment without 3-D Secure or decline the transaction.</message>
+        <message code="731" translate="true">Completed authentication with this Secure3d ID not found.</message>
+        <message code="732" translate="true">Sale and 3-D Secure card numbers are different.</message>
+        <message code="733" translate="true">Sale and 3-D Secure card expiration years are different.</message>
+        <message code="734" translate="true">Sale and 3-D Secure card expiration months are different.</message>
+        <message code="735" translate="true">Sale and 3-D Secure amounts are different.</message>
+        <message code="736" translate="true">Sale and 3-D Secure currency codes are different.</message>
+        <message code="737" translate="true">Sale with ID [id_sale] was performed for this Secure3d ID.</message>
+        <message code="780" translate="true">Service fee amount not set.</message>
+        <message code="781" translate="true">Sub-merchant ID not set.</message>
+        <message code="782" translate="true">Company cannot process sub-merchant transactions.</message>
+        <message code="783" translate="true">Invalid sub-merchant ID.</message>
+        <message code="784" translate="true">Sub-merchant is disabled.</message>
+        <message code="785" translate="true">Service fee amount is too low.</message>
+        <message code="786" translate="true">Invalid service fee amount.</message>
+        <message code="787" translate="true">Sub-merchant ID mismatch.</message>
+    </message_list>
+</mapping>

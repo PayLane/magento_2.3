@@ -1,0 +1,336 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * File: system.xml
+ *
+ 
+ */
+ -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="payment">
+            <group id="paylane" translate="label" sortOrder="300" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Polskie ePłatności</label>
+                <field id="active" translate="label" sortOrder="10" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="title" translate="label" sortOrder="20" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Title</label>
+                </field>
+                <field id="sort_order" translate="label" sortOrder="30" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sort order</label>
+                </field>
+                <field id="payment_mode" translate="label" sortOrder="40" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Payment mode</label>
+                    <source_model>PeP\PaymentGateway\Model\Source\Payment\Mode</source_model>
+                </field>
+                <field id="hash_salt" translate="label" sortOrder="50" type="password" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Hash salt</label>
+                </field>
+                <field id="merchant_id" translate="label" sortOrder="60" type="text" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Merchant ID</label>
+                    <depends>
+                        <field id="payment_mode">SECURE_FORM</field>
+                    </depends>
+                </field>
+                <field id="username" translate="label comment" sortOrder="70" type="text" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>API Login</label>
+                    <comment><![CDATA[Get from <a href="http://merchant.paylane.com" target="_blank">http://merchant.paylane.com</a>]]></comment>
+                    <depends>
+                        <field id="payment_mode">API</field>
+                    </depends>
+                </field>
+                <field id="password" translate="label comment" sortOrder="80" type="password" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>API Password</label>
+                    <comment><![CDATA[Get from <a href="http://merchant.paylane.com" target="_blank">http://merchant.paylane.com</a>]]></comment>
+                    <depends>
+                        <field id="payment_mode">API</field>
+                    </depends>
+                </field>
+                <field id="api_key" translate="label comment" sortOrder="90" type="text" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Public API key</label>
+                    <comment><![CDATA[Get from <a href="http://merchant.paylane.com" target="_blank">http://merchant.paylane.com</a>]]></comment>
+                    <depends>
+                        <field id="payment_mode">API</field>
+                    </depends>
+                </field>
+                <!-- <field id="pending_order_status" translate="label comment" sortOrder="100" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Pending Order Status</label>
+                    <source_model>PeP\PaymentGateway\Model\Source\Order\Status</source_model>
+                    <comment><![CDATA[<span style="color: red; font-weight: bold;">WARNING:</span> Using "Complete" status will cause creating invoice and shipment automatically!]]></comment>
+                </field>
+                <field id="performed_order_status" translate="label comment" sortOrder="110" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Performed Order Status</label>
+                    <source_model>PeP\PaymentGateway\Model\Source\Order\Status</source_model>
+                    <comment><![CDATA[<span style="color: red; font-weight: bold;">WARNING:</span> Using "Complete" status will cause creating invoice and shipment automatically!]]></comment>
+                </field>
+                <field id="cleared_order_status" translate="label comment" sortOrder="120" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Cleared Order Status</label>
+                    <source_model>PeP\PaymentGateway\Model\Source\Order\Status</source_model>
+                    <comment><![CDATA[<span style="color: red; font-weight: bold;">WARNING:</span> Using "Complete" status will cause creating invoice and shipment automatically!]]></comment>
+                </field>
+                <field id="error_order_status" translate="label comment" sortOrder="130" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Error Order Status</label>
+                    <source_model>PeP\PaymentGateway\Model\Source\Order\Status</source_model>
+                    <comment><![CDATA[<span style="color: red; font-weight: bold;">WARNING:</span> Using "Complete" status will cause creating invoice and shipment automatically!]]></comment>
+                </field> -->
+                <field id="redirect_method" translate="label" sortOrder="140" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Redirect method</label>
+                    <source_model>PeP\PaymentGateway\Model\Source\Redirect\Method</source_model>
+                </field>
+                <field id="enable_log" translate="label comment" sortOrder="150" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Enable logging</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Logs will be able in {magento-directory}/var/log/paylane/]]></comment>
+                </field>
+                <group id="paylane_notifications" translate="label" sortOrder="500" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Notifications settings</label>
+                    <field id="notifications_url" translate="label" sortOrder="10" type="text" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>URL that handles automatic notifications</label>
+                        <frontend_model>PeP\PaymentGateway\Block\Adminhtml\System\Config\Field\Notification\Url</frontend_model>
+                    </field>
+                    <field id="mode" translate="label" sortOrder="15" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Notification handle mode</label>
+                        <source_model>PeP\PaymentGateway\Model\Source\Notification\Mode</source_model>
+                    </field>
+                    <field id="token" translate="label comment" sortOrder="20" type="text" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Notification Token</label>
+                        <comment><![CDATA[Optional, can be configured in <a href="http://merchant.paylane.com" target="_blank">Merchant Panel</a>]]></comment>
+                    </field>
+                    <field id="username" translate="label comment" sortOrder="30" type="text" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Notification username</label>
+                        <comment><![CDATA[Optional, can be configured in <a href="http://merchant.paylane.com" target="_blank">Merchant Panel</a>]]></comment>
+                    </field>
+                    <field id="password" translate="label comment" sortOrder="40" type="text" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Notification password</label>
+                        <comment><![CDATA[Optional, can be configured in <a href="http://merchant.paylane.com" target="_blank">Merchant Panel</a>]]></comment>
+                    </field>
+                    <field id="enable_log" translate="label comment" sortOrder="50" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable logging</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment><![CDATA[Logs will be able in {magento-directory}/var/log/paylane/]]></comment>
+                    </field>
+                </group>
+            </group>
+            <group id="paylane_secureform" translate="label comment" sortOrder="310" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Polskie ePłatności | SecureForm</label>
+                <comment>Customers will be redirect to PayLane payment form in order to process payment</comment>
+                <field id="title" translate="label" sortOrder="15" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Title</label>
+                </field>
+                <field id="sort_order" translate="label" sortOrder="18" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sort order</label>
+                </field>
+                <field id="show_img" translate="label comment" sortOrder="35" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Payment Method Image</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Whether show payment method image on payment methods list in checkout</comment>
+                </field>
+                <field id="send_customer_data" translate="label comment" sortOrder="40" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Send Customer Data</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Send additional customer data while redirecting to SecureForm</comment>
+                </field>
+            </group>
+            <group id="paylane_creditcard" translate="label" sortOrder="320" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Polskie ePłatności | Credit card</label>
+                <field id="active" translate="label" sortOrder="10" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Enable this solution</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="title" translate="label" sortOrder="20" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Title</label>
+                </field>
+                <field id="sort_order" translate="label" sortOrder="22" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sort order</label>
+                </field>
+                <field id="show_img" translate="label comment" sortOrder="35" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Payment Method Image</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Whether show payment method image on payment methods list in checkout</comment>
+                </field>
+                <!--<field id="fraud_check_overwrite" translate="label comment" sortOrder="50" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Overwrite Fraud check?</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Be sure that you can do a overwrite - you can check it in your <a href="http://merchant.paylane.com" target="_blank">Merchant Panel</a>]]></comment>
+                </field>
+                <field id="fraud_check" translate="label" sortOrder="60" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Fraud check</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="fraud_check_overwrite">1</field>
+                    </depends>
+                </field>
+                <field id="avs_check_overwrite" translate="label comment" sortOrder="70" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Overwrite AVS check level?</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Be sure that you can do a overwrite - you can check it in your <a href="http://merchant.paylane.com" target="_blank">Merchant Panel</a>]]></comment>
+                </field>
+                <field id="avs_check_level" translate="label" sortOrder="80" type="text" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>AVS check level</label>
+                    <source_model>PeP\PaymentGateway\Model\Source\Avs\Check\Level</source_model>
+                    <depends>
+                        <field id="avs_check_overwrite">1</field>
+                    </depends>
+                </field>-->
+                <!-- <field id="payment_action" translate="label" type="select" sortOrder="75" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Payment Action</label>
+                    <source_model>PeP\PaymentGateway\Model\Source\Payment\Action</source_model>
+                    <depends>
+                        <field id="ds3_check">1</field>
+                    </depends>
+                </field>
+                <field id="ds3_check" translate="label" sortOrder="80" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>3DS check</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field> -->
+
+                
+<!--                <field id="authorization_amount" translate="label comment" sortOrder="90" type="text" showInDefault="1" showInWebsite="1" showInStore="0">-->
+<!--                    <label>Blocked amount in authorization process</label>-->
+<!--                    <comment>Set in default store currency</comment>-->
+<!--                    <validate>validate-number</validate>-->
+<!--                </field>-->
+<!--                <field id="single_click_active" translate="label comment" sortOrder="100" type="select" showInDefault="1" showInWebsite="1" showInStore="0">-->
+<!--                    <label>Enable Single-click payment</label>-->
+<!--                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>-->
+<!--                    <comment><![CDATA[More info about Single click available at <a href="http://devzone.paylane.pl/api/karty/platnosci-single-click/" target="_blank">http://devzone.paylane.pl/api/karty/platnosci-single-click/</a>]]></comment>-->
+<!--                </field>-->
+            </group>
+             <group id="paylane_banktransfer" translate="label" sortOrder="330" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Polskie ePłatności | Bank transfer</label>
+                <field id="active" translate="label" sortOrder="10" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Enable this solution</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="title" translate="label" sortOrder="20" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Title</label>
+                </field>
+                <field id="sort_order" translate="label" sortOrder="30" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sort order</label>
+                </field>
+                <field id="show_img" translate="label comment" sortOrder="40" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Payment Method Image</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Whether show payment method image on payment methods list in checkout</comment>
+                </field>
+            </group>
+           <group id="paylane_paypal" translate="label" sortOrder="340" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Polskie ePłatności | PayPal</label>
+                <field id="active" translate="label" sortOrder="10" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Enable this solution</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="title" translate="label" sortOrder="20" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Title</label>
+                </field>
+                <field id="sort_order" translate="label" sortOrder="30" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sort order</label>
+                </field>
+                <field id="show_img" translate="label comment" sortOrder="40" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Payment Method Image</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Whether show payment method image on payment methods list in checkout</comment>
+                </field>
+            </group>
+            <group id="paylane_applepay" translate="label" sortOrder="380" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Polskie ePłatności | Apple Pay</label>
+                <field id="active" translate="label" sortOrder="10" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Enable this solution</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="title" translate="label" sortOrder="20" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Title</label>
+                </field>
+                <field id="sort_order" translate="label" sortOrder="30" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sort order</label>
+                </field>
+                <field id="show_img" translate="label comment" sortOrder="40" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Payment Method Image</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Whether show payment method image on payment methods list in checkout</comment>
+                </field>
+                <field id="certificate" translate="label" sortOrder="50" type="textarea" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Certificate</label>
+                    <comment><![CDATA[<strong>What to do to enable Apple Pay:</strong><br>- Send an email to support@paylane.com asking you to enable Apple Pay on your account<br>- If you use the payment method through the API, please request a <b>certificate</b><br>- Paste the <b>certificate</b> into the certificate field<br>- Tell us when you will finish above activities]]></comment>
+                </field>
+            </group>
+            <group id="paylane_blik0" translate="label" sortOrder="390" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Polskie ePłatności | BLIK level 0</label>
+                <field id="active" translate="label" sortOrder="10" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Enable this solution</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="title" translate="label" sortOrder="20" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Title</label>
+                </field>
+                <field id="sort_order" translate="label" sortOrder="30" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sort order</label>
+                </field>
+                <field id="show_img" translate="label comment" sortOrder="40" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Payment Method Image</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Whether show payment method image on payment methods list in checkout</comment>
+                </field>
+            </group>
+            <group id="paylane_directdebit" translate="label" sortOrder="350" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Polskie ePłatności | Direct Debit</label>
+                <field id="active" translate="label" sortOrder="10" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Enable this solution</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="title" translate="label" sortOrder="20" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Title</label>
+                </field>
+                <field id="sort_order" translate="label" sortOrder="30" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sort order</label>
+                </field>
+                <field id="show_img" translate="label comment" sortOrder="40" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Payment Method Image</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Whether show payment method image on payment methods list in checkout</comment>
+                </field>
+                <field id="mandate_id" translate="label" sortOrder="60" type="text" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Mandate ID</label>
+                </field>
+            </group>
+           <group id="paylane_sofort" translate="label" sortOrder="360" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Polskie ePłatności | SOFORT Banking</label>
+                <field id="active" translate="label" sortOrder="10" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Enable this solution</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="title" translate="label" sortOrder="20" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Title</label>
+                </field>
+                <field id="sort_order" translate="label" sortOrder="30" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sort order</label>
+                </field>
+                <field id="show_img" translate="label comment" sortOrder="40" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Payment Method Image</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Whether show payment method image on payment methods list in checkout</comment>
+                </field>
+            </group>
+            <group id="paylane_ideal" translate="label" sortOrder="370" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Polskie ePłatności | iDEAL</label>    
+                <field id="active" translate="label" sortOrder="10" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Enable this solution</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="title" translate="label" sortOrder="20" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Title</label>
+                </field>
+                <field id="sort_order" translate="label" sortOrder="30" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sort order</label>
+                </field>
+                <field id="show_img" translate="label comment" sortOrder="40" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Payment Method Image</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Whether show payment method image on payment methods list in checkout</comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

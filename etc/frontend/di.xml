@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * File: di.xml
+ *
+ 
+ */
+ -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <!-- Constructor arguments injection section -->
+    <type name="Magento\Payment\Model\CcGenericConfigProvider">
+        <arguments>
+            <argument name="methodCodes" xsi:type="array">
+                <item name="paylane_creditcard" xsi:type="const">PeP\PaymentGateway\Model\Config\Methods\CreditCardConfigProvider::CODE_CREDIT_CARD</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!--TODO: add new checkout config provider for secure form-->
+
+    <type name="Magento\Checkout\Model\CompositeConfigProvider">
+        <arguments>
+            <argument name="configProviders" xsi:type="array">
+                <item name="paylane" xsi:type="object">PeP\PaymentGateway\Model\Checkout\ConfigProvider</item>
+                <item name="secure_form" xsi:type="object">PeP\PaymentGateway\Model\Checkout\SecureFormConfigProvider</item>
+                <item name="credit_card" xsi:type="object">PeP\PaymentGateway\Model\Checkout\CreditCardConfigProvider</item>
+            </argument>
+        </arguments>
+    </type>
+    <!-- End of constructor arguments injection section -->
+
+</config>

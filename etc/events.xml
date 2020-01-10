@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * File: events.xml
+ *
+ 
+ */
+ -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="payment_method_assign_data_paylane_creditcard">
+        <observer name="paylane_gateway_data_assign" instance="PeP\PaymentGateway\Observer\DataAssignObserver" />
+    </event>
+    <event name="admin_system_config_changed_section_payment">
+        <observer name="paylane_admin_system_config_changed_section_payment" instance="PeP\PaymentGateway\Observer\ConfigObserver"/>
+    </event>
+</config>
