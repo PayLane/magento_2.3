@@ -3,7 +3,7 @@
 declare (strict_types = 1);
 
 /**
- * File: Applepay.php
+ * File: Googlepay.php
  *
 
  */
@@ -20,17 +20,18 @@ use Magento\Sales\Model\OrderFactory;
 use Magento\Sales\Model\Spi\OrderResourceInterface as OrderResource;
 use PeP\PaymentGateway\Api\Adapter\PayLaneRestClientFactoryInterface;
 use PeP\PaymentGateway\Model\Config\GeneralConfigProvider;
-use PeP\PaymentGateway\Model\Payment\Request\Builder\CustomerDataBuilder;
+use PeP\PaymentGateway\Model\Payment\Request\Builder\GooglepayBackUrlBuilder;
+use PeP\PaymentGateway\Model\Payment\Request\Builder\GooglePayCustomerDataBuilder;
 use PeP\PaymentGateway\Model\Payment\Request\Builder\SaleDataBuilder;
 use PeP\PaymentGateway\Model\Payment\Request\Builder\TokenBuilder;
 use PeP\PaymentGateway\Model\TransactionHandler;
 use Psr\Log\LoggerInterface;
 
 /**
- * Class Applepay
+ * Class Googlepay
  * @package PeP\PaymentGateway\Model\Payment\Adapter
  */
-class Applepay extends AbstractAdapter
+class Googlepay extends AbstractAdapter
 {
     /**
      * @var array
@@ -53,9 +54,14 @@ class Applepay extends AbstractAdapter
     protected $tokenBuilder;
 
     /**
-     * @var CustomerDataBuilder
+     * @var GooglePayCustomerDataBuilder
      */
     protected $customerDataBuilder;
+
+    /**
+     * @var GooglepayBackUrlBuilder
+     */
+    protected $backUrlBuilder;
 
     /**
      * @var OrderFactory
@@ -78,7 +84,7 @@ class Applepay extends AbstractAdapter
     private $logger;
 
     /**
-     * Applepay constructor.
+     * Googlepay constructor.
      * @param GeneralConfigProvider $generalConfigProvider
      * @param PayLaneRestClientFactoryInterface $payLaneRestClientFactory
      * @param SaleDataBuilder $saleBuilder
@@ -88,7 +94,8 @@ class Applepay extends AbstractAdapter
      * @param CartManagementInterface $cartManagementInterface
      * @param TransactionHandler $transactionHandler
      * @param TokenBuilder $tokenBuilder
-     * @param CustomerDataBuilder $customerDataBuilder
+     * @param GooglePayCustomerDataBuilder $customerDataBuilder
+     * @param GooglepayBackUrlBuilder $backUrlBuilder
      * @param LoggerInterface $logger
      * @SuppressWarnings(PHPMD.LongVariable)
      */
@@ -102,7 +109,8 @@ class Applepay extends AbstractAdapter
         CartManagementInterface $cartManagementInterface,
         TransactionHandler $transactionHandler,
         TokenBuilder $tokenBuilder,
-        CustomerDataBuilder $customerDataBuilder,
+        GooglePayCustomerDataBuilder $customerDataBuilder,
+        GooglepayBackUrlBuilder $backUrlBuilder,
         LoggerInterface $logger
     ) {
         parent::__construct($payLaneRestClientFactory, $redirect, $orderResource);
@@ -113,6 +121,7 @@ class Applepay extends AbstractAdapter
         $this->cartManagementInterface = $cartManagementInterface;
         $this->transactionHandler = $transactionHandler;
         $this->customerDataBuilder = $customerDataBuilder;
+        $this->backUrlBuilder = $backUrlBuilder;
         $this->logger = $logger;
     }
 
@@ -137,46 +146,77 @@ class Applepay extends AbstractAdapter
      */
     public function handleResponse(array $responseData, ResponseInterface $response)
     {
-        $quote = $this->quote;
-        $orderId = $this->cartManagementInterface->placeOrder($quote->getId());
-        $order = $this->orderFactory->create();
-        $this->orderResource->load($order, $orderId);
-        $orderStatus = $this->generalConfigProvider->getErrorOrderStatus();
         $success = false;
+        $orderStatus = $this->generalConfigProvider->getErrorOrderStatus();
 
-        if ($order->getId()) {
-            if ($responseData['success']) {
-                $success = true;
-                $orderStatus = $this->generalConfigProvider->getClearedOrderStatus();
-                $comment = __('Payment handled via PayLane module | Transaction ID: %1', $responseData['id_sale']);
-                $orderPayment = $order->getPayment();
-                $orderPayment->setTransactionId($responseData['id_sale']);
-                $orderPayment->setIsTransactionClosed(true);
-                $orderPayment->addTransaction('capture');
+        if (!empty($responseData['success']) && $responseData['success']) {
+            if ($responseData['is_card_enrolled'] == false) {
+                $responseData2 = $this->captureRequest($responseData['id_3dsecure_auth']);
+
+                if (!empty($responseData2['success']) && $responseData2['success']) {
+                    $orderStatus = $this->generalConfigProvider->getPendingOrderStatus();
+
+                    $quote = $this->quote;
+                    $orderId = $this->cartManagementInterface->placeOrder($quote->getId());
+
+                    $order = $this->orderFactory->create();
+                    $this->orderResource->load($order, $orderId);
+
+                    $idSale = $responseData2['id_sale'];
+                    $success = true;
+                    $comment = __('Payment handled via PayLane module | Transaction ID: %1', $idSale);
+                    $orderPayment = $order->getPayment();
+                    $orderPayment->setTransactionId($idSale);
+
+                    $orderPayment->setIsTransactionClosed(false);
+                    $orderPayment->addTransaction('capture');
+
+                    $this->transactionHandler->setOrderState($order, $orderStatus, $comment);
+                    $this->orderResource->save($order);
+
+                    $this->logger->info("PAYMENT OK [PENDING]\n" . (string) $comment);
+                } else {
+                    $quote = $this->quote;
+                    $orderId = $this->cartManagementInterface->placeOrder($quote->getId());
+                    $order = $this->orderFactory->create();
+                    $this->orderResource->load($order, $orderId);
+                    $error = $responseData2['error'];
+
+                    $comment = __(
+                        'Payment handled via PayLane module | Error (%1): %2',
+                        $error['error_number'],
+                        $error['error_description']
+                    );
+
+                    $this->logger->error((string) $comment);
+
+                    $this->transactionHandler->setOrderState($order, $orderStatus, $comment);
+                    $this->orderResource->save($order);
+                }
             } else {
-                $error = $responseData['error'];
-                $comment = __(
-                    'Payment handled via PayLane module | Error (%1): %2',
-                    $error['error_number'],
-                    $error['error_description']
-                );
-
-                $this->logger->error((string) $comment);
-
-                $this->transactionHandler->setOrderState($order, $orderStatus, $comment);
-                $this->orderResource->save($order);
-
-                return $error['error_description'];
-
+                header('Location: ' . $responseData['redirect_url']);
+                die;
             }
+        } else {
+            $quote = $this->quote;
+            $orderId = $this->cartManagementInterface->placeOrder($quote->getId());
+            $order = $this->orderFactory->create();
+            $this->orderResource->load($order, $orderId);
+            $error = $responseData['error'];
+
+            $comment = __(
+                'Payment handled via PayLane module | Error (%1): %2',
+                $error['error_number'],
+                $error['error_description']
+            );
+
+            $this->logger->error((string) $comment);
 
             $this->transactionHandler->setOrderState($order, $orderStatus, $comment);
             $this->orderResource->save($order);
         }
 
-        // $this->handleRedirect($success, $response);
-
-        return $order;
+        $this->handleRedirect($success, $response);
 
     }
 
@@ -195,7 +235,8 @@ class Applepay extends AbstractAdapter
      */
     public function handleRequest()
     {
-        $responseData = $this->makeRequest($this->params);
+        $requestData = $this->buildRequest();
+        $responseData = $this->makeRequest($requestData);
 
         return $responseData;
     }
@@ -206,6 +247,10 @@ class Applepay extends AbstractAdapter
     protected function buildRequest(): array
     {
         $result = [];
+        $result = array_merge_recursive($result, $this->customerDataBuilder->build($this->quote));
+        $result = array_merge_recursive($result, $this->saleBuilder->build($this->quote));
+        $result = array_merge_recursive($result, $this->backUrlBuilder->build($this->quote));
+
         return $result;
     }
 
@@ -217,6 +262,17 @@ class Applepay extends AbstractAdapter
     protected function makeRequest(array $requestData)
     {
         $client = $this->payLaneRestClientFactory->create();
-        return $client->applePaySale($requestData);
+        return $client->googlePaySale($requestData);
+    }
+
+    /**
+     * @param array $requestData
+     * @return mixed
+     * @throws Exception
+     */
+    protected function captureRequest($id3dsecureAuth)
+    {
+        $client = $this->payLaneRestClientFactory->create();
+        return $client->saleBy3DSecureAuthorization(['id_3dsecure_auth' => $id3dsecureAuth]);
     }
 }

@@ -17,6 +17,7 @@ use PeP\PaymentGateway\Model\Config\Methods\IdealConfigProvider;
 use PeP\PaymentGateway\Api\Config\GeneralConfigProviderInterface;
 use PeP\PaymentGateway\Model\Config\Methods\PayPalConfigProvider;
 use PeP\PaymentGateway\Model\Config\Methods\ApplePayConfigProvider;
+use PeP\PaymentGateway\Model\Config\Methods\GooglePayConfigProvider;
 use PeP\PaymentGateway\Model\Config\Methods\CreditCardConfigProvider;
 use PeP\PaymentGateway\Model\Config\Methods\SecureFormConfigProvider;
 use PeP\PaymentGateway\Model\Config\Methods\DirectDebitConfigProvider;
@@ -313,6 +314,7 @@ class GeneralConfigProvider implements GeneralConfigProviderInterface
             SecureFormConfigProvider::CODE_SECURE_FORM,
             SofortBankingConfigProvider::CODE_SOFORT,
             ApplePayConfigProvider::CODE_APPLE_PAY,
+            GooglePayConfigProvider::CODE_GOOGLE_PAY,
             Blik0ConfigProvider::CODE_BLIK0
         ];
     }

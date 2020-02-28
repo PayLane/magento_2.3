@@ -13,6 +13,8 @@
                 type="PeP\PaymentGateway\Model\Adapter\PayLaneRestClientFactory" />
     <preference for="PeP\PaymentGateway\Api\Config\Methods\ApplePayConfigProviderInterface"
                 type="PeP\PaymentGateway\Model\Config\Methods\ApplePayConfigProvider" />
+    <preference for="PeP\PaymentGateway\Api\Config\Methods\GooglePayConfigProviderInterface"
+                type="PeP\PaymentGateway\Model\Config\Methods\GooglePayConfigProvider" />
     <preference for="PeP\PaymentGateway\Api\Config\Methods\BankTransferConfigProviderInterface"
                 type="PeP\PaymentGateway\Model\Config\Methods\BankTransferConfigProvider" />
     <preference for="PeP\PaymentGateway\Api\Config\Methods\CreditCardConfigProviderInterface"
@@ -450,6 +452,13 @@
         </arguments>
     </virtualType>
 
+    <virtualType name="PayLaneGooglePayFacade" type="PayLaneFacade">
+        <arguments>
+            <argument name="code" xsi:type="const">PeP\PaymentGateway\Model\Config\Methods\GooglePayConfigProvider::CODE_GOOGLE_PAY</argument>
+            <argument name="valueHandlerPool" xsi:type="object">PayLaneGooglePayValueHandlerPool</argument>
+        </arguments>
+    </virtualType>
+
     <virtualType name="PayLaneIdealFacade" type="PayLaneFacade">
         <arguments>
             <argument name="code" xsi:type="const">PeP\PaymentGateway\Model\Config\Methods\IdealConfigProvider::CODE_IDEAL</argument>
@@ -508,6 +517,12 @@
     <virtualType name="Virtual\PayLane\Gateway\Config\ApplePay\Config" type="Magento\Payment\Gateway\Config\Config">
         <arguments>
             <argument name="methodCode" xsi:type="const">PeP\PaymentGateway\Model\Config\Methods\ApplePayConfigProvider::CODE_APPLE_PAY</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Virtual\PayLane\Gateway\Config\GooglePay\Config" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">PeP\PaymentGateway\Model\Config\Methods\GooglePayConfigProvider::CODE_GOOGLE_PAY</argument>
         </arguments>
     </virtualType>
 
@@ -572,6 +587,14 @@
         </arguments>
     </virtualType>
 
+    <virtualType name="PayLaneGooglePayValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">PayLaneGooglePayConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
     <virtualType name="PayLaneIdealValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
         <arguments>
             <argument name="handlers" xsi:type="array">
@@ -626,6 +649,12 @@
     <virtualType name="PayLaneApplePayConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
         <arguments>
             <argument name="configInterface" xsi:type="object">Virtual\PayLane\Gateway\Config\ApplePay\Config</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="PayLaneGooglePayConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">Virtual\PayLane\Gateway\Config\GooglePay\Config</argument>
         </arguments>
     </virtualType>
 
@@ -776,6 +805,11 @@
             <argument name="logger" xsi:type="object">Virtual\PayLane\Logger\PaymentProcessLogger</argument>
         </arguments>
     </type>
+    <type name="PeP\PaymentGateway\Model\Payment\Adapter\Googlepay">
+        <arguments>
+            <argument name="logger" xsi:type="object">Virtual\PayLane\Logger\PaymentProcessLogger</argument>
+        </arguments>
+    </type>
     <type name="PeP\PaymentGateway\Model\Payment\Adapter\Banktransfer">
         <arguments>
             <argument name="logger" xsi:type="object">Virtual\PayLane\Logger\PaymentProcessLogger</argument>
@@ -792,6 +826,13 @@
         </arguments>
     </type>
     <type name="PeP\PaymentGateway\Model\Payment\Adapter\Blik0">
+        <arguments>
+            <argument name="logger" xsi:type="object">Virtual\PayLane\Logger\PaymentProcessLogger</argument>
+        </arguments>
+    </type>
+
+
+    <type name="PeP\PaymentGateway\Controller\Googlepay\Handle">
         <arguments>
             <argument name="logger" xsi:type="object">Virtual\PayLane\Logger\PaymentProcessLogger</argument>
         </arguments>

@@ -73,6 +73,13 @@ define(
 
         rendererList.push(
             {
+                type: 'paylane_googlepay',
+                component: 'PeP_PaymentGateway/js/view/payment/method-renderer/paylane-googlepay'
+            }
+        );
+
+        rendererList.push(
+            {
                 type: 'paylane_blik0',
                 component: 'PeP_PaymentGateway/js/view/payment/method-renderer/paylane-blik0'
             }

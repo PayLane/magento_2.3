@@ -17,6 +17,7 @@ use PeP\PaymentGateway\Api\Config\Methods\Blik0ConfigProviderInterface;
 use PeP\PaymentGateway\Api\Config\Methods\IdealConfigProviderInterface;
 use PeP\PaymentGateway\Api\Config\Methods\PayPalConfigProviderInterface;
 use PeP\PaymentGateway\Api\Config\Methods\ApplePayConfigProviderInterface;
+use PeP\PaymentGateway\Api\Config\Methods\GooglePayConfigProviderInterface;
 use PeP\PaymentGateway\Api\Config\Methods\CreditCardConfigProviderInterface;
 use PeP\PaymentGateway\Api\Config\Methods\DirectDebitConfigProviderInterface;
 use PeP\PaymentGateway\Api\Config\Methods\BankTransferConfigProviderInterface;
@@ -32,6 +33,11 @@ class ConfigProvider implements ConfigProviderInterface
      * @var ApplePayConfigProviderInterface
      */
     private $applePayConfigProvider;
+
+    /**
+     * @var GooglePayConfigProviderInterface
+     */
+    private $googlePayConfigProvider;
 
     /**
      * @var BankTransferConfigProviderInterface
@@ -81,6 +87,7 @@ class ConfigProvider implements ConfigProviderInterface
     /**
      * ConfigProvider constructor.
      * @param ApplePayConfigProviderInterface $applePayConfigProvider
+     * @param GooglePayConfigProviderInterface $googlePayConfigProvider
      * @param BankTransferConfigProviderInterface $bankTransferConfigProvider
      * @param CreditCardConfigProviderInterface $creditCardConfigProvider
      * @param DirectDebitConfigProviderInterface $directDebitConfigProvider
@@ -94,6 +101,7 @@ class ConfigProvider implements ConfigProviderInterface
      */
     public function __construct(
         ApplePayConfigProviderInterface $applePayConfigProvider,
+        GooglePayConfigProviderInterface $googlePayConfigProvider,
         BankTransferConfigProviderInterface $bankTransferConfigProvider,
         CreditCardConfigProviderInterface $creditCardConfigProvider,
         DirectDebitConfigProviderInterface $directDebitConfigProvider,
@@ -105,6 +113,7 @@ class ConfigProvider implements ConfigProviderInterface
         ScopeConfigInterface $scopeConfig
     ) {
         $this->applePayConfigProvider = $applePayConfigProvider;
+        $this->googlePayConfigProvider = $googlePayConfigProvider;
         $this->bankTransferConfigProvider = $bankTransferConfigProvider;
         $this->creditCardConfigProvider = $creditCardConfigProvider;
         $this->directDebitConfigProvider = $directDebitConfigProvider;
@@ -146,6 +155,9 @@ class ConfigProvider implements ConfigProviderInterface
                 ],
                 'paylane_applepay' => [
                     'show_img' => $this->applePayConfigProvider->isPaymentMethodImageShown()
+                ],
+                'paylane_googlepay' => [
+                    'show_img' => $this->googlePayConfigProvider->isPaymentMethodImageShown()
                 ],
                 'paylane_blik0' => [
                     'show_img' => $this->blik0ConfigProvider->isPaymentMethodImageShown()

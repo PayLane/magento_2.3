@@ -25,6 +25,7 @@
                 <item name="paylane" xsi:type="object">PeP\PaymentGateway\Model\Checkout\ConfigProvider</item>
                 <item name="secure_form" xsi:type="object">PeP\PaymentGateway\Model\Checkout\SecureFormConfigProvider</item>
                 <item name="credit_card" xsi:type="object">PeP\PaymentGateway\Model\Checkout\CreditCardConfigProvider</item>
+                <item name="googlepay" xsi:type="object">PeP\PaymentGateway\Model\Checkout\GooglepayConfigProvider</item>
             </argument>
         </arguments>
     </type>

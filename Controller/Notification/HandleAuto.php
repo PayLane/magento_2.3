@@ -144,17 +144,18 @@ class HandleAuto extends Action implements CsrfAwareActionInterface
      */
     public function execute()
     {
+        $params = (array)$this->getRequest()->getParams(); 
+
         //prevent trigger notification before handle process ended
         sleep(5);
 
         if ($this->isAutoMode()) {
-            $params = $this->getRequest()->getParams();
 
             if (!isset($params['content'])) {
                 die(-1);
             }
 
-            if (!is_array($params['content'])) {
+            if (!is_array($params['content'])) { 
                 die(-2);
             }
 
@@ -174,6 +175,7 @@ class HandleAuto extends Action implements CsrfAwareActionInterface
             }
 
             if (empty($params['communication_id'])) {
+                $this->log("========== empty comm id ==========\n");
                 $message = __('Empty communication id')->getText();
                 $this->log($message, [], 'error');
                 die($message);
@@ -181,6 +183,7 @@ class HandleAuto extends Action implements CsrfAwareActionInterface
 
             if (!empty($params['token'])
                 && ($this->notificationsConfigProvider->getNotificationToken() !== $params['token'])) {
+                    $this->log("========== wrong token ==========\n");
                 $message = __('Wrong token')->getText();
                 $this->log($message, [$params['token']]);
                 die($message);
@@ -208,12 +211,14 @@ class HandleAuto extends Action implements CsrfAwareActionInterface
                 continue;
             }
 
-            $_txt = json_decode(stripslashes($message['text']), true);
-            if (is_array($_txt)) {
-                $order_id = ($_txt['description']);
-            } else {
-                $order_id = ($notification['text']);
-            }
+            // $_txt = json_decode(stripslashes($message['text']), true);
+            // if (is_array($_txt)) {
+            //     $order_id = ($_txt['description']);
+            // } else {
+            //     $order_id = ($_txt['text']);
+            // }
+
+            $order_id = $message['text'];
 
             $this->log(
                 (string) __(
@@ -312,7 +317,7 @@ class HandleAuto extends Action implements CsrfAwareActionInterface
         return $this->notificationsConfigProvider->getNotificationHandlingMode() === Data::MODE_AUTO;
     }
 
-    //! todo
+    
     private function canUpdateStatus($currentNotifType, $newNotifType)
     {
         if ($currentNotifType == TransactionHandler::TYPE_SALE && $newNotifType == TransactionHandler::TYPE_REFUND) {

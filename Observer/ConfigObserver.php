@@ -17,6 +17,7 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use PeP\PaymentGateway\Api\Config\GeneralConfigProviderInterface;
 use PeP\PaymentGateway\Api\Config\Methods\ApplePayConfigProviderInterface;
+use PeP\PaymentGateway\Api\Config\Methods\GooglePayConfigProviderInterface;
 use PeP\PaymentGateway\Model\Source\Payment\Mode;
 
 /**
@@ -46,23 +47,31 @@ class ConfigObserver implements ObserverInterface
     private $applePayConfigProvider;
 
     /**
+     * @var GooglePayConfigProviderInterface
+     */
+    private $googlePayConfigProvider;
+
+    /**
      * ConfigObserver constructor.
      * @param GeneralConfigProviderInterface $generalConfigProvider
      * @param WriterInterface $configWriter
      * @param TypeListInterface $cacheTypeList
      * @param ApplePayConfigProviderInterface $applePayConfigProvider
+     * @param GooglePayConfigProviderInterface $googlePayConfigProvider
      * @SuppressWarnings(PHPMD.LongVariable)
      */
     public function __construct(
         GeneralConfigProviderInterface $generalConfigProvider,
         WriterInterface $configWriter,
         TypeListInterface $cacheTypeList,
-        ApplePayConfigProviderInterface $applePayConfigProvider
+        ApplePayConfigProviderInterface $applePayConfigProvider,
+        GooglePayConfigProviderInterface $googlePayConfigProvider
     ) {
         $this->generalConfigProvider = $generalConfigProvider;
         $this->configWriter = $configWriter;
         $this->cacheTypeList = $cacheTypeList;
         $this->applePayConfigProvider = $applePayConfigProvider;
+        $this->googlePayConfigProvider = $googlePayConfigProvider;
     }
 
     /**
@@ -82,6 +91,7 @@ class ConfigObserver implements ObserverInterface
             $this->togglePaymentMethod('payment/paylane_sofort/active', 0);
             $this->togglePaymentMethod('payment/paylane_ideal/active', 0);
             $this->togglePaymentMethod('payment/paylane_applepay/active', 0);
+            $this->togglePaymentMethod('payment/paylane_googlepay/active', 0);
             $this->togglePaymentMethod('payment/paylane_blik0/active', 0);
             $this->togglePaymentMethod('payment/paylane_secureform/active', 1);
         }

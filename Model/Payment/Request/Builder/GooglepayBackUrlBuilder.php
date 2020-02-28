@@ -20,7 +20,7 @@ use Magento\Quote\Model\Quote;
  * Class BackUrlBuilder
  * @package PeP\PaymentGateway\Model\Payment\Request\Builder
  */
-class BackUrlBuilder implements BuilderInterface
+class GooglepayBackUrlBuilder implements BuilderInterface
 {
     /**
      * @var UrlInterface
@@ -35,19 +35,15 @@ class BackUrlBuilder implements BuilderInterface
         $this->urlBuilder = $urlBuilder;
     }
 
-    /**
-     * @inheritdoc
-     */
+
     public function build(Quote $quote): array
     {
         $result = [
             'back_url' => $this->urlBuilder->getUrl(
-                'paylane/transaction/handle/quote/' . $quote->getId(),
-                ['_nosid' => true]
+                'paylane/googlepay/handle/quote/' . $quote->getId()
             )
         ];
 
         return $result;
     }
-
 }

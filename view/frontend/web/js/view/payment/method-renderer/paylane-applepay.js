@@ -18,7 +18,8 @@ define(
         'mage/storage',
         'Magento_Customer/js/model/customer',
         'Magento_Checkout/js/model/payment/additional-validators',
-        'jquery'
+        'jquery',
+        'mage/template',
     ],
     function (
         url,
@@ -31,7 +32,8 @@ define(
         storage,
         customer,
         additionalValidators,
-        $
+        $,
+        mageTemplate
     ) {
         return Component.extend({
             defaults: {
@@ -101,6 +103,18 @@ define(
 
             onApplePayAuthorized: function (paymentResult, completion) {
                 var _self = this;
+                fullScreenLoader.startLoader();
+                customerData.invalidate(['cart']);
+
+                let formData = {
+                    method_code: this.item.method,
+                    additional_data: null
+                };
+
+
+                _.each(paymentResult, function (val, key) {
+                    formData['additional_data[' + key + ']'] = val;
+                });
 
                 if (customer.isLoggedIn()) {
                     paymentResult.quote_id = quote.getQuoteId();
@@ -207,8 +221,8 @@ define(
                     fullScreenLoader.startLoader();
                     this.applePaySession = PayLane.applePay.createSession(
                         this.getCartParams(),
-                        this.onApplePayAuthorized,
-                        this.onError
+                        this.onApplePayAuthorized.bind(this),
+                        this.onError.bind(this)
                     )
                     return true;
                 }

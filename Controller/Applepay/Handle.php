@@ -25,12 +25,15 @@ use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\QuoteFactory;
 use Magento\Quote\Model\ResourceModel\Quote as QuoteResource;
 use Magento\Quote\Model\ResourceModel\Quote\Payment as PaymentResource;
+use Magento\Framework\App\CsrfAwareActionInterface;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\App\Request\InvalidRequestException;
 
 /**
  * Class Handle
  * @package PeP\PaymentGateway\Controller\Applepay
  */
-class Handle extends Action
+class Handle extends Action implements CsrfAwareActionInterface
 {
     /**
      * @var Applepay
@@ -182,5 +185,15 @@ class Handle extends Action
         }
 
         $this->quoteResource->save($quote);
+    }
+
+    public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
+    {
+        return null;
+    }
+
+    public function validateForCsrf(RequestInterface $request): ?bool
+    {
+        return true;
     }
 }

@@ -1,0 +1,46 @@
+<!--
+/**
+ * File: googlepay.html
+ *
+ 
+ */
+ -->
+
+ <div class="payment-method googlepaymethod"
+ data-bind="css: {'_active': (getCode() == isChecked())}, visible: googlePayActive">
+ <div class="payment-method-title field choice paylane-method-title">
+     <input type="radio" name="payment[method]" class="radio"
+         data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()" />
+     <label class="label" data-bind="attr: {'for': getCode()}">
+         <div class="img-wrapper" data-bind="if: showPaymentMethodImg(), visible: showPaymentMethodImg()"><img
+                 data-bind="attr: {src: getPaymentMethodImgUrl(), title: getTitle()}"></div>
+         <span data-bind="text: getTitle()"></span>
+     </label>
+ </div>
+
+ <div class="payment-method-content">
+     <!-- ko foreach: getRegion('messages') -->
+     <!-- ko template: getTemplate() -->
+     <!-- /ko -->
+     <!--/ko-->
+     <div class="payment-method-billing-address">
+         <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
+         <!-- ko template: getTemplate() -->
+         <!-- /ko -->
+         <!--/ko-->
+     </div>
+
+     <div class="field required">
+         <!-- ko i18n: 'You will be redirected to Google Pay payment sheet after clicking button below'-->
+         <!-- /ko -->
+     </div>
+
+     <div class="actions-toolbar">
+         <div class="primary">
+             <div class="google-pay-button visible" id="google-pay-button"
+                 data-bind="click: placeOrder, attr: {title: $t('Pay with Google Pay')}"
+                 afterRender="showGooglePayBtn()"></div>
+         </div>
+     </div>
+ </div>
+</div>

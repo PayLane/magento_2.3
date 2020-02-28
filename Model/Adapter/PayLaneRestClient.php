@@ -494,6 +494,34 @@ class PayLaneRestClient
         );
     }
 
+     /**
+     * @param  array $params
+     * @return array
+     * @throws Exception
+     */
+    public function googlePaySale(array $params)
+    {
+        return $this->call(
+            'googlepay/sale',
+            'post',
+            $params
+        );
+    }
+
+    /**
+     * @param  array $params
+     * @return array
+     * @throws Exception
+     */
+    public function googlePayAuthorization(array $params)
+    {
+        return $this->call(
+            'googlepay/authorization',
+            'post',
+            $params
+        );
+    }
+
     /**
      * @param  array $params
      * @return array
@@ -602,6 +630,8 @@ class PayLaneRestClient
         $response = curl_exec($ch);
 
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        \file_put_contents('/var/www/html/tmp.log',$this->api_url . $method.' x '.json_encode($request).' x '.json_encode($response));
 
         if (isset($this->http_errors[$http_code])) {
             throw new Exception('Response Http Error - ' . $this->http_errors[$http_code]);

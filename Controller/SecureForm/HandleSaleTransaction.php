@@ -116,6 +116,14 @@ class HandleSaleTransaction extends Action implements CsrfAwareActionInterface, 
 
         if ($status === Data::STATUS_ERROR) {
             $this->noteError($lastOrder, $request);
+
+            // $payment->setSkipTransactionCreation(true);
+            // $state = 'pending_payment';
+            // $status = 'pending_payment';
+            // $payment->setState($state);
+            // $payment->setStatus($status);
+            // $payment->setIsTransactionPending(true);
+
             return $this->configureRedirectToFailure($redirect);
 
             //! todo - mozna dodac wznawianie kiedys? jak w woo

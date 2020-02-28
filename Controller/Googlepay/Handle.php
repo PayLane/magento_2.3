@@ -1,30 +1,31 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 /**
  * File: Handle.php
  *
- 
+
  */
 
-namespace PeP\PaymentGateway\Controller\Transaction;
+namespace PeP\PaymentGateway\Controller\Googlepay;
 
 use Exception;
-use PeP\PaymentGateway\Api\Config\GeneralConfigProviderInterface;
-use PeP\PaymentGateway\Model\Notification\Data;
-use PeP\PaymentGateway\Model\TransactionHandler;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\CsrfAwareActionInterface;
-use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Quote\Api\CartManagementInterface;
 use Magento\Sales\Model\Order;
-use Magento\Sales\Model\Spi\OrderResourceInterface as OrderResource;
 use Magento\Sales\Model\OrderFactory;
+use Magento\Sales\Model\Spi\OrderResourceInterface as OrderResource;
+use PeP\PaymentGateway\Api\Config\GeneralConfigProviderInterface;
+use PeP\PaymentGateway\Model\Notification\Data;
+use PeP\PaymentGateway\Model\TransactionHandler;
 use Psr\Log\LoggerInterface;
+use PeP\PaymentGateway\Api\Adapter\PayLaneRestClientFactoryInterface;
 
 /**
  * Class Handle
@@ -32,6 +33,13 @@ use Psr\Log\LoggerInterface;
  */
 class Handle extends Action implements CsrfAwareActionInterface
 {
+
+     /**
+     * @var PayLaneRestClientFactoryInterface
+     */
+    private $payLaneRestClientFactory;
+
+    
     /**
      * @var GeneralConfigProviderInterface
      */
@@ -57,7 +65,7 @@ class Handle extends Action implements CsrfAwareActionInterface
      */
     private $orderResource;
 
-     /**
+    /**
      * @var LoggerInterface
      */
     private $logger;
@@ -70,6 +78,7 @@ class Handle extends Action implements CsrfAwareActionInterface
      * @param TransactionHandler $transactionHandler
      * @param CartManagementInterface $cartManagementInterface
      * @param OrderResource $orderResource
+     * @param PayLaneRestClientFactoryInterface $payLaneRestClientFactory
      * @SuppressWarnings(PHPMD.LongVariable)
      */
     public function __construct(
@@ -79,6 +88,7 @@ class Handle extends Action implements CsrfAwareActionInterface
         TransactionHandler $transactionHandler,
         CartManagementInterface $cartManagementInterface,
         OrderResource $orderResource,
+        PayLaneRestClientFactoryInterface $payLaneRestClientFactory,
         LoggerInterface $logger
     ) {
         parent::__construct($context);
@@ -87,6 +97,7 @@ class Handle extends Action implements CsrfAwareActionInterface
         $this->transactionHandler = $transactionHandler;
         $this->cartManagementInterface = $cartManagementInterface;
         $this->orderResource = $orderResource;
+        $this->payLaneRestClientFactory = $payLaneRestClientFactory;
         $this->logger = $logger;
     }
 
@@ -99,7 +110,7 @@ class Handle extends Action implements CsrfAwareActionInterface
     {
         $params = $this->getRequest()->getParams();
 
-        $this->logger->info("======== TRANSACTION ========\n". \json_encode($params));
+        $this->logger->info("======== TRANSACTION X ========\n" . \json_encode($params));
 
         $success = false;
 
@@ -118,7 +129,7 @@ class Handle extends Action implements CsrfAwareActionInterface
             } else {
                 $hcurrency = $params['currency'];
             }
-        }else{
+        } else {
             $hcurrency = $params['currency'];
             $status = $params['status'];
         }
@@ -143,26 +154,30 @@ class Handle extends Action implements CsrfAwareActionInterface
         $this->orderResource->load($order, $orderId);
 
         if ($order->getId()) {
+            $isError = false;
             if ($status != Data::STATUS_ERROR) {
-                $success = true;
-                $comment = __('Payment handled via PayLane module | Transaction ID: %1', $idSale);
-                $orderPayment = $order->getPayment();
-                $orderPayment->setTransactionId($idSale);
+                $responseData2 = $this->captureRequest($params['id_3dsecure_auth']);
 
-                if ($status == Data::STATUS_PENDING) {
+                if (!empty($responseData2['success']) && $responseData2['success']) {
+                    $orderStatus = $this->generalConfigProvider->getPendingOrderStatus();
+
+                    $idSale = $responseData2['id_sale'];
+                    $comment = __('Payment handled via PayLane module | Transaction ID: %1', $idSale);
+                    $orderPayment = $order->getPayment();
+                    $orderPayment->setTransactionId($idSale);
+
                     $orderPayment->setIsTransactionClosed(false);
-                    $orderPayment->addTransaction('authorization');
-                } elseif (in_array($status, [Data::STATUS_PERFORMED, Data::STATUS_CLEARED])) {
-                    if ($status === Data::STATUS_PERFORMED) {
-                        $orderPayment->setIsTransactionClosed(false);
-                    } else {
-                        $orderPayment->setIsTransactionClosed(true);
-                    }
                     $orderPayment->addTransaction('capture');
-                }
 
-                $this->logger->info("PAYMENT OK [".$status."]\n". (string)$comment);
-            } else {
+                    $this->logger->info("PAYMENT OK [PENDING]\n" . (string) $comment);
+                    $success = true;
+                } else {
+                    $isError = true;
+                    $params = $responseData2;
+                }
+            }
+
+            if ($status == Data::STATUS_ERROR || $isError) {
                 if (isset($params['error'])) {
                     $errorNumber = $params['error']['error_number'];
                     $errorDescription = $params['error']['error_description'];
@@ -173,15 +188,15 @@ class Handle extends Action implements CsrfAwareActionInterface
                     $errorNumber = 'Undefined';
                     $errorDescription = 'Undefined';
                 }
-                
+
                 $comment = __('Payment handled via PayLane module | Error (%1): %2', $errorNumber, $errorDescription);
 
-                $this->logger->error("PAYMENT ERROR\n". (string)$comment);
+                $this->logger->error("PAYMENT ERROR\n" . (string) $comment);
             }
-        
+
             $this->transactionHandler->setOrderState($order, $orderStatus, $comment);
             $this->orderResource->save($order);
-        }else{
+        } else {
             $this->logger->error('No order!');
         }
 
@@ -231,5 +246,16 @@ class Handle extends Action implements CsrfAwareActionInterface
             default:
                 return $this->generalConfigProvider->getErrorOrderStatus();
         }
+    }
+
+    /**
+     * @param array $requestData
+     * @return mixed
+     * @throws Exception
+     */
+    protected function captureRequest($id3dsecureAuth)
+    {
+        $client = $this->payLaneRestClientFactory->create();
+        return $client->saleBy3DSecureAuthorization(['id_3dsecure_auth' => $id3dsecureAuth]);
     }
 }
