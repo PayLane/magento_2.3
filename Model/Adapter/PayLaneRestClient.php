@@ -626,12 +626,14 @@ class PayLaneRestClient
         curl_setopt($ch, CURLOPT_USERPWD, $this->username . ':' . $this->password);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $this->ssl_verify);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 80); 
+        curl_setopt($ch, CURLOPT_TIMEOUT, 80); 
 
         $response = curl_exec($ch);
 
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-        \file_put_contents('/var/www/html/tmp.log',$this->api_url . $method.' x '.json_encode($request).' x '.json_encode($response));
+        // \file_put_contents('/var/www/html/tmp.log',$this->api_url . $method.' x '.json_encode($request).' x '.json_encode($response));
 
         if (isset($this->http_errors[$http_code])) {
             throw new Exception('Response Http Error - ' . $this->http_errors[$http_code]);

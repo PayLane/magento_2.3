@@ -7,6 +7,10 @@
  */
  -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Sales\Api\OrderRepositoryInterface">
+        <plugin name="paylane_paymentgateway_add_order_extension_attribute"
+                type="PeP\PaymentGateway\Plugin\OrderRepositoryPlugin" />
+    </type>
 
     <!-- API section -->
     <preference for="PeP\PaymentGateway\Api\Adapter\PayLaneRestClientFactoryInterface"

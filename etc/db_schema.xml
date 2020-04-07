@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+
+    <table name="sales_order" resource="sales" comment="">
+        <column xsi:type="int" name="paylane_notification_timestamp" padding="11" unsigned="true" nullable="true"
+                identity="false" default="0" comment="PayLane Notification timestamp"/>
+        <column xsi:type="varchar" name="paylane_notification_status" nullable="true"
+                default="" length="3" comment="PayLane Notification status"/>
+    </table>
+</schema>

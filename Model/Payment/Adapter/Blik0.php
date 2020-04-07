@@ -131,7 +131,7 @@ class Blik0 extends AbstractAdapter
         ];
     }
 
-    /** 
+    /**
      * @param array $responseData
      * @param ResponseInterface $response
      * @return mixed|void
@@ -150,13 +150,37 @@ class Blik0 extends AbstractAdapter
 
         if ($order->getId()) {
             if ($responseData['success']) {
-                $success = true;
-                $orderStatus = $this->generalConfigProvider->getClearedOrderStatus();
                 $comment = __('Payment handled via PayLane module | Transaction ID: %1', $responseData['id_sale']);
-                $orderPayment = $order->getPayment();
-                $orderPayment->setTransactionId($responseData['id_sale']);
-                $orderPayment->setIsTransactionClosed(true);
-                $orderPayment->addTransaction('capture');
+                $order->addCommentToStatusHistory($comment);
+                $this->orderResource->save($order);
+
+                // wait for notification
+                $status = $this->checkNotification($orderId);
+                if ($status !== 'S') {
+                    $comment = __(
+                        'Payment handled via PayLane module | Status (%1): %2',
+                        $status,
+                        __('Not confirmed')
+                    );
+    
+                    $this->logger->info((string) $comment);
+                    $success = true;
+                    $orderStatus = $this->generalConfigProvider->getPendingOrderStatus();
+                    $orderPayment = $order->getPayment();
+                    $orderPayment->setTransactionId($responseData['id_sale']);
+                    $orderPayment->setIsTransactionClosed(false);
+                } else {
+                    $success = true;
+                    $orderStatus = $this->generalConfigProvider->getClearedOrderStatus();
+                    $order->setPaylaneNotificationTimestamp(time());
+                    $order->setPaylaneNotificationStatus('S');
+                    // $orderStatus = $this->generalConfigProvider->getPendingOrderStatus();
+                    // $comment = __('Payment handled via PayLane module | Transaction ID: %1', $responseData['id_sale']);
+                    $orderPayment = $order->getPayment();
+                    $orderPayment->setTransactionId($responseData['id_sale']);
+                    $orderPayment->setIsTransactionClosed(true);
+                    $orderPayment->addTransaction('capture');
+                }
 
             } else {
                 $error = $responseData['error'];
@@ -166,12 +190,12 @@ class Blik0 extends AbstractAdapter
                     $error['error_description']
                 );
 
-                $this->logger->error((string)$comment);
+                $this->logger->error((string) $comment);
 
             }
-        
-            $this->transactionHandler->setOrderState($order, $orderStatus, $comment);
-            $this->orderResource->save($order);
+
+            $this->transactionHandler->setOrderState($order, $orderStatus, null);
+            // $this->orderResource->save($order);
         }
 
         $this->handleRedirect($success, $response);
@@ -203,5 +227,36 @@ class Blik0 extends AbstractAdapter
         $client = $this->payLaneRestClientFactory->create();
 
         return $client->blikSale($requestData);
+    }
+
+    /**
+     * @return boolean|string
+     */
+    protected function checkNotification($orderId)
+    {
+        $i = 0;
+        while (1) {
+            if ($i > 30) {
+                break;
+            }
+            
+            $order = $this->orderFactory->create();
+            $this->orderResource->load($order, $orderId);
+
+            $status = $order->getPaylaneNotificationStatus();
+            if ($status === '' || $status === null) {
+                sleep(1);
+                
+                $i++;
+                continue;
+            }
+
+            return $status;
+            break;
+        }
+
+        if ($i > 30) {
+            return false;
+        }
     }
 }

@@ -218,7 +218,7 @@ class HandleAuto extends Action implements CsrfAwareActionInterface
             //     $order_id = ($_txt['text']);
             // }
 
-            $order_id = $message['text'];
+            $order_id = (int)$message['text'];
 
             $this->log(
                 (string) __(
@@ -230,15 +230,19 @@ class HandleAuto extends Action implements CsrfAwareActionInterface
 
             $order = $this->order->loadByIncrementId($order_id);
 
+            $now = time();
+
             if ($order->getId()) {
                 // if ($notificationType === false || ($notificationType !== false && $this->canUpdateStatus($notificationType, $notification['type']))) {
                 switch ($message['type']) {
                     case TransactionHandler::TYPE_SALE:
                         $orderStatus = $this->generalConfigProvider->getClearedOrderStatus();
                         $comment = __('TRANSACTION CONFIRMED! Order status changed via PayLane module');
+                        $order->setPaylaneNotificationTimestamp($now);
+                        $order->setPaylaneNotificationStatus($message['type']);
                         $this->transactionHandler->setOrderState($order, $orderStatus, $comment);
                         $this->orderResource->save($order);
-                        $this->log((string) __('Changed order status to: %1', $orderStatus));
+                        $this->log((string) __('Changed order status to: %1', $orderStatus).' | '.$order->getId().' | '.$order_id);
                         break;
 
                     case TransactionHandler::TYPE_REFUND:
@@ -248,6 +252,9 @@ class HandleAuto extends Action implements CsrfAwareActionInterface
                                 'Notification: Refund was handled via PayLane module | Refund ID: %1',
                                 $message['id']
                             ));
+
+                            $order->setPaylaneNotificationTimestamp($now);
+                            $order->setPaylaneNotificationStatus($message['type']);
 
                             $this->orderResource->save($order);
 
@@ -273,6 +280,7 @@ class HandleAuto extends Action implements CsrfAwareActionInterface
                 // }
             } else {
                 $this->log('Order not found!', [], 'error');
+                die('Order not found');
             }
         }
     }

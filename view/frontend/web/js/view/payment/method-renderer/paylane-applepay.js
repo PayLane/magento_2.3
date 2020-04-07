@@ -95,7 +95,7 @@ define(
                     countryCode: checkoutConfig.defaultCountryId,
                     currencyCode: totals.base_currency_code,
                     total: {
-                        label: $t('Order from shop ') + storeName,
+                        label: $t('Zamów ze sklepu ') + storeName,
                         amount: parseFloat(totals.base_grand_total).toFixed(2)
                     }
                 };

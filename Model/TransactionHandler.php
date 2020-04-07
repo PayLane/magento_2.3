@@ -137,9 +137,11 @@ class TransactionHandler
 
         $order->setState($this->getStateByStatus($status));
         $order->setStatus($status);
-        $history = $order->addCommentToStatusHistory($comment);
-        $history->setIsCustomerNotified($customerNotify);
-        $history->save();
+        if($comment !== null){
+            $history = $order->addCommentToStatusHistory($comment);
+            $history->setIsCustomerNotified($customerNotify);
+            $history->save();
+        }
         $this->orderResource->save($order);
 
         return $order;

@@ -127,6 +127,8 @@ class Start extends Action
 
                 try {
                     $responseData = $adapter->handleRequest();
+                    //print_r($responseData);exit;
+
                 } catch (Exception $exception) {
                     $responseData['error'] = [
                         'error_description' => 'Unauthorized',
