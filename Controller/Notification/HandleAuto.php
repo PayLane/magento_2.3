@@ -218,7 +218,7 @@ class HandleAuto extends Action implements CsrfAwareActionInterface
             //     $order_id = ($_txt['text']);
             // }
 
-            $order_id = (int)$message['text'];
+            $order_id = $message['text'];
 
             $this->log(
                 (string) __(
@@ -240,6 +240,8 @@ class HandleAuto extends Action implements CsrfAwareActionInterface
                         $comment = __('TRANSACTION CONFIRMED! Order status changed via PayLane module');
                         $order->setPaylaneNotificationTimestamp($now);
                         $order->setPaylaneNotificationStatus($message['type']);
+                        $orderPayment = $order->getPayment();
+                        $orderPayment->setIsTransactionClosed(true);
                         $this->transactionHandler->setOrderState($order, $orderStatus, $comment);
                         $this->orderResource->save($order);
                         $this->log((string) __('Changed order status to: %1', $orderStatus).' | '.$order->getId().' | '.$order_id);

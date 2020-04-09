@@ -6,7 +6,6 @@ declare(strict_types=1);
  * File:TransactionHandler.php
  *
  *
- 
  */
 
 namespace PeP\PaymentGateway\Model;
