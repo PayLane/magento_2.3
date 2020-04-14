@@ -18,10 +18,10 @@
                 <can_use_internal>0</can_use_internal>
                 <is_gateway>1</is_gateway>
                 <sort_order>100</sort_order>
-                <pending_order_status>processing</pending_order_status>
+                <pending_order_status>pending_payment</pending_order_status>
                 <performed_order_status>processing</performed_order_status>
                 <cleared_order_status>processing</cleared_order_status>
-                <error_order_status>processing</error_order_status>
+                <error_order_status>holded</error_order_status>
                 <redirect_method>POST</redirect_method>
                 <paylane_notifications>
                     <mode>auto</mode>

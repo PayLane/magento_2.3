@@ -110,7 +110,7 @@ class Handle extends Action implements CsrfAwareActionInterface
     {
         $params = $this->getRequest()->getParams();
 
-        $this->logger->info("======== TRANSACTION X ========\n" . \json_encode($params));
+        $this->logger->info("======== TRANSACTION ========\n" . \json_encode($params));
 
         $success = false;
 
@@ -165,8 +165,7 @@ class Handle extends Action implements CsrfAwareActionInterface
                     $comment = __('Payment handled via PayLane module | Transaction ID: %1', $idSale);
                     $orderPayment = $order->getPayment();
                     $orderPayment->setTransactionId($idSale);
-
-                    $orderPayment->setIsTransactionClosed(false);
+                    $orderPayment->setIsTransactionClosed(true);
                     $orderPayment->addTransaction('capture');
 
                     $this->logger->info("PAYMENT OK [PENDING]\n" . (string) $comment);

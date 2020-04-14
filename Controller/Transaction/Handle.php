@@ -130,11 +130,11 @@ class Handle extends Action implements CsrfAwareActionInterface
             $hcurrency . '|' .
             $idSale);
 
-        $orderStatus = $this->generalConfigProvider->getErrorOrderStatus();
+        $orderStatus = $this->generalConfigProvider->getPendingOrderStatus();
 
-        if ($hash === $hashComputed && $status !== Data::STATUS_ERROR) {
-            $orderStatus = $this->getOrderStatus((string) $status);
-        }
+        // if ($hash === $hashComputed && $status !== Data::STATUS_ERROR) {
+        //     $orderStatus = $this->getOrderStatus((string) $status);
+        // }
 
         $orderId = $this->cartManagementInterface->placeOrder($params['quote']);
 
@@ -173,6 +173,8 @@ class Handle extends Action implements CsrfAwareActionInterface
                     $errorNumber = 'Undefined';
                     $errorDescription = 'Undefined';
                 }
+
+                $orderStatus = $this->generalConfigProvider->getErrorOrderStatus();
                 
                 $comment = __('Payment handled via PayLane module | Error (%1): %2', $errorNumber, $errorDescription);
 

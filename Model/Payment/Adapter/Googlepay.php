@@ -167,8 +167,7 @@ class Googlepay extends AbstractAdapter
                     $comment = __('Payment handled via PayLane module | Transaction ID: %1', $idSale);
                     $orderPayment = $order->getPayment();
                     $orderPayment->setTransactionId($idSale);
-
-                    $orderPayment->setIsTransactionClosed(false);
+                    $orderPayment->setIsTransactionClosed(true);
                     $orderPayment->addTransaction('capture');
 
                     $this->transactionHandler->setOrderState($order, $orderStatus, $comment);

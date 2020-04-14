@@ -216,6 +216,7 @@ class GeneralConfigProvider implements GeneralConfigProviderInterface
         string $scopeType = ScopeInterface::SCOPE_WEBSITE,
         $scopeCode = null
     ): string {
+        return 'pending_payment';
         return (string) $this->scopeConfig->getValue(
             self::XML_PATH_PAYMENT_PAYLANE_PENDING_ORDER_STATUS,
             $scopeType,
@@ -264,6 +265,7 @@ class GeneralConfigProvider implements GeneralConfigProviderInterface
         string $scopeType = ScopeInterface::SCOPE_WEBSITE,
         $scopeCode = null
     ): string {
+        return 'holded';
         return (string) $this->scopeConfig->getValue(
             self::XML_PATH_PAYMENT_PAYLANE_ERROR_ORDER_STATUS,
             $scopeType,

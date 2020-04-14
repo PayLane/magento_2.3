@@ -24,6 +24,7 @@ use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderPaymentInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class Handle3DSecure
@@ -66,6 +67,11 @@ class RedirectTo3DSecureProviderPage extends Action implements HttpGetActionInte
      */
     private $session;
 
+      /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     /**
      * RedirectTo3DSecureProviderPage constructor.
      * @param GeneralConfigProviderInterface $generalConfigProvider
@@ -82,7 +88,8 @@ class RedirectTo3DSecureProviderPage extends Action implements HttpGetActionInte
         SubjectReader $subjectReader,
         DefaultConfigProvider $defaultConfigProvider,
         Session $session,
-        Context $context
+        Context $context,
+        LoggerInterface $logger
     ) {
         parent::__construct($context);
         $this->generalConfigProvider = $generalConfigProvider;
@@ -90,6 +97,7 @@ class RedirectTo3DSecureProviderPage extends Action implements HttpGetActionInte
         $this->subjectReader = $subjectReader;
         $this->defaultConfigProvider = $defaultConfigProvider;
         $this->session = $session;
+        $this->logger = $logger;
     }
 
     /**

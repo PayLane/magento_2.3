@@ -69,6 +69,8 @@ abstract class AbstractClient implements ClientInterface
 
         $response = [];
 
+        $this->logger->info(">>> ========== CARD PAYMENT START ========== <<<\n". json_encode($log));
+
         try {
             $response = $this->process($data);
         } catch (Exception $exception) {

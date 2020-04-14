@@ -117,20 +117,7 @@ class HandleSaleTransaction extends Action implements CsrfAwareActionInterface, 
         if ($status === Data::STATUS_ERROR) {
             $this->noteError($lastOrder, $request);
 
-            // $payment->setSkipTransactionCreation(true);
-            // $state = 'pending_payment';
-            // $status = 'pending_payment';
-            // $payment->setState($state);
-            // $payment->setStatus($status);
-            // $payment->setIsTransactionPending(true);
-
             return $this->configureRedirectToFailure($redirect);
-
-            //! todo - mozna dodac wznawianie kiedys? jak w woo
-
-            // $lastOrder->cancel();
-            // $lastOrder->save();
-            // return $redirect->setPath('checkout/cart');
         }
 
         $this->noteProcessing($lastOrder, $request);
@@ -207,7 +194,10 @@ class HandleSaleTransaction extends Action implements CsrfAwareActionInterface, 
             $errorMessage
         )->render();
         $this->logger->critical("SECURE FORM\n".$comment, []);
+        $order->addStatusToHistory(\Magento\Sales\Model\Order::STATE_HOLDED, $comment, true);
+        $order->setState(\Magento\Sales\Model\Order::STATE_HOLDED);
         $order->addCommentToStatusHistory($comment);
+        $order->save();
         $this->messageManager->addErrorMessage($errorMessage);
     }
 
@@ -223,7 +213,9 @@ class HandleSaleTransaction extends Action implements CsrfAwareActionInterface, 
             $request->getParam(self::ID_SALE_PARAM, '')
         )->render();
         $this->logger->info("SECURE FORM\n".$comment,[]);
+        $order->addStatusToHistory(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT, $comment, true);
         $order->addCommentToStatusHistory($comment);
+        $order->save();
     }
 
     /**

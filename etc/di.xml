@@ -361,7 +361,7 @@
 
         <type name="PeP\PaymentGateway\Gateway\Response\CreditCard\Capture\PaymentMessageHandler">
             <arguments>
-                <argument name="logger" xsi:type="object">Virtual\PayLane\Logger\CreditCardLogger</argument>
+                <argument name="logger" xsi:type="object">Virtual\PayLane\Logger\PaymentProcessLogger</argument>
             </arguments>
         </type>
 
@@ -837,6 +837,12 @@
 
 
     <type name="PeP\PaymentGateway\Controller\Googlepay\Handle">
+        <arguments>
+            <argument name="logger" xsi:type="object">Virtual\PayLane\Logger\PaymentProcessLogger</argument>
+        </arguments>
+    </type>
+
+    <type name="PeP\PaymentGateway\Gateway\Http\Client\CreditCard\Check3DSecureClient">
         <arguments>
             <argument name="logger" xsi:type="object">Virtual\PayLane\Logger\PaymentProcessLogger</argument>
         </arguments>

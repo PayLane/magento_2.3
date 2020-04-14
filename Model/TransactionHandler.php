@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 /**
  * File:TransactionHandler.php
@@ -17,6 +17,7 @@ use Magento\Sales\Model\Convert\Order as ConvertOrder;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\ResourceModel\Status\Collection;
 use Magento\Sales\Model\Spi\OrderResourceInterface as OrderResource;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class TransactionHandler
@@ -62,6 +63,11 @@ class TransactionHandler
     private $orderResource;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * TransactionHandler constructor.
      * @param TransactionFactory $transactionFactory
      * @param Collection $collection
@@ -72,12 +78,14 @@ class TransactionHandler
         TransactionFactory $transactionFactory,
         Collection $collection,
         ConvertOrder $convertOrder,
-        OrderResource $orderResource
+        OrderResource $orderResource,
+        LoggerInterface $logger
     ) {
         $this->transactionFactory = $transactionFactory;
         $this->statusCollection = $collection;
         $this->convertOrder = $convertOrder;
         $this->orderResource = $orderResource;
+        $this->logger = $logger;
     }
 
     /**
@@ -94,49 +102,56 @@ class TransactionHandler
      */
     public function setOrderState(Order $order, $status, $comment = null, $customerNotify = false)
     {
-        if ($status === Order::STATE_COMPLETE) {
+        if ($status === Order::STATE_PROCESSING) { //Order::STATE_COMPLETE
             /**
              * To set order in "complete" state, there must be
              * created invoice and shipment (if product is not virtual)
              */
-            $invoice = $order->prepareInvoice()
-                ->setTransactionId($order->getId())
-                ->addComment("Invoice created by PayLane payment module.")
-                ->register()
-                ->pay();
 
-            $this->transactionFactory->create()
-                ->addObject($invoice)
-                ->addObject($invoice->getOrder())
-                ->save();
+            if (!$order->hasInvoices()) {
+                if ($order->canInvoice()) {
+                    $invoice = $order->prepareInvoice()
+                        ->setTransactionId($order->getId())
+                    // ->addComment("Invoice created by PayLane payment module.")
+                        ->register()
+                        ->pay();
 
-            if ($order->canShip()) {
-                $shipment = $this->convertOrder->toShipment($order);
-
-                foreach ($order->getAllItems() as $orderItem) {
-                    if (!$orderItem->getQtyToShip() || $orderItem->getIsVirtual()) {
-                        continue;
-                    }
-
-                    $qtyShipped = $orderItem->getQtyToShip();
-                    $shipmentItem = $this->convertOrder->itemToShipmentItem($orderItem)->setQty($qtyShipped);
-                    $shipment->addItem($shipmentItem);
-                }
-
-                if ($shipment) {
-                    $shipment->register();
-                    $shipment->getOrder()->setIsInProcess(true);
                     $this->transactionFactory->create()
-                        ->addObject($shipment)
-                        ->addObject($shipment->getOrder())
+                        ->addObject($invoice)
+                        ->addObject($invoice->getOrder())
                         ->save();
                 }
             }
+
+            //todo
+            // if ($order->canShip()) {
+            //     $shipment = $this->convertOrder->toShipment($order);
+
+            //     foreach ($order->getAllItems() as $orderItem) {
+            //         if (!$orderItem->getQtyToShip() || $orderItem->getIsVirtual()) {
+            //             continue;
+            //         }
+
+            //         $qtyShipped = $orderItem->getQtyToShip();
+            //         $shipmentItem = $this->convertOrder->itemToShipmentItem($orderItem)->setQty($qtyShipped);
+            //         $shipment->addItem($shipmentItem);
+            //     }
+
+            //     if ($shipment) {
+            //         $shipment->register();
+            //         $shipment->getOrder()->setIsInProcess(true);
+            //         $this->transactionFactory->create()
+            //             ->addObject($shipment)
+            //             ->addObject($shipment->getOrder())
+            //             ->save();
+            //     }
+            // }
         }
 
         $order->setState($this->getStateByStatus($status));
         $order->setStatus($status);
-        if($comment !== null){
+        $this->logger->error((string) $status);
+        if ($comment !== null) {
             $history = $order->addCommentToStatusHistory($comment);
             $history->setIsCustomerNotified($customerNotify);
             $history->save();

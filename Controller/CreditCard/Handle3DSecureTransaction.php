@@ -27,6 +27,7 @@ use PeP\PaymentGateway\Api\Config\GeneralConfigProviderInterface;
 use PeP\PaymentGateway\Api\Order\CaptureOperationWrapperInterface;
 use PeP\PaymentGateway\Model\Request\BackRequestValidatorComposite;
 use PeP\PaymentGateway\Api\Order\Payment\TransactionManagerInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class Handle3DSecureTransaction
@@ -81,6 +82,11 @@ class Handle3DSecureTransaction extends Action implements CsrfAwareActionInterfa
      */
     private $session;
 
+       /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     /**
      * Handle3DSecureTransaction constructor.
      * @param GeneralConfigProviderInterface $generalConfigProvider
@@ -99,7 +105,8 @@ class Handle3DSecureTransaction extends Action implements CsrfAwareActionInterfa
         SubjectReader $subjectReader,
         BackRequestValidatorComposite $backRequestValidatorComposite,
         Session $session,
-        Context $context
+        Context $context,
+        LoggerInterface $logger
     ) {
         parent::__construct($context);
         $this->generalConfigProvider = $generalConfigProvider;
@@ -108,6 +115,7 @@ class Handle3DSecureTransaction extends Action implements CsrfAwareActionInterfa
         $this->subjectReader = $subjectReader;
         $this->backRequestValidatorComposite = $backRequestValidatorComposite;
         $this->session = $session;
+        $this->logger = $logger;
     }
 
     /**
@@ -120,6 +128,8 @@ class Handle3DSecureTransaction extends Action implements CsrfAwareActionInterfa
         $request = $this->getRequest();
         $status = $request->getParam(self::STATUS_PARAM, '');
         $lastOrder = $this->session->getLastRealOrder();
+
+        $this->logger->info("======== TRANSACTION CARD ========\n" . \json_encode($request->getParams()));
 
         if ($status === Data::STATUS_ERROR) {
             $params = $request->getParams();

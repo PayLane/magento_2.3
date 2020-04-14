@@ -147,7 +147,7 @@ class Applepay extends AbstractAdapter
         if ($order->getId()) {
             if ($responseData['success']) {
                 $success = true;
-                $orderStatus = $this->generalConfigProvider->getClearedOrderStatus();
+                $orderStatus = $this->generalConfigProvider->getPendingOrderStatus();
                 $comment = __('Payment handled via PayLane module | Transaction ID: %1', $responseData['id_sale']);
                 $orderPayment = $order->getPayment();
                 $orderPayment->setTransactionId($responseData['id_sale']);
@@ -173,6 +173,8 @@ class Applepay extends AbstractAdapter
             $this->transactionHandler->setOrderState($order, $orderStatus, $comment);
             $this->orderResource->save($order);
         }
+
+        $this->logger->info(">>> ========== APPLE PAY PAYMENT END ========== <<<\n");
 
         // $this->handleRedirect($success, $response);
 
@@ -216,6 +218,8 @@ class Applepay extends AbstractAdapter
      */
     protected function makeRequest(array $requestData)
     {
+        $requestData['sale']['description'] = $this->quote->getReservedOrderId();
+        $this->logger->info(">>> ========== APPLE PAY PAYMENT START ========== <<<\n" . \json_encode($requestData['sale']));
         $client = $this->payLaneRestClientFactory->create();
         return $client->applePaySale($requestData);
     }

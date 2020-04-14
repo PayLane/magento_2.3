@@ -152,6 +152,11 @@ class Blik0 extends AbstractAdapter
             if ($responseData['success']) {
                 $comment = __('Payment handled via PayLane module | Transaction ID: %1', $responseData['id_sale']);
                 $order->addCommentToStatusHistory($comment);
+                $orderStatus = $this->generalConfigProvider->getPendingOrderStatus();
+                $success = true;
+                $orderPayment = $order->getPayment();
+                $orderPayment->setTransactionId($responseData['id_sale']);
+                $this->transactionHandler->setOrderState($order, $orderStatus, null);
                 $this->orderResource->save($order);
 
                 // wait for notification
@@ -164,22 +169,14 @@ class Blik0 extends AbstractAdapter
                     );
     
                     $this->logger->info((string) $comment);
-                    $success = true;
-                    $orderStatus = $this->generalConfigProvider->getPendingOrderStatus();
-                    $orderPayment = $order->getPayment();
-                    $orderPayment->setTransactionId($responseData['id_sale']);
-                    $orderPayment->setIsTransactionClosed(false);
                 } else {
-                    $success = true;
-                    $orderStatus = $this->generalConfigProvider->getClearedOrderStatus();
                     $order->setPaylaneNotificationTimestamp(time());
                     $order->setPaylaneNotificationStatus('S');
-                    // $orderStatus = $this->generalConfigProvider->getPendingOrderStatus();
-                    // $comment = __('Payment handled via PayLane module | Transaction ID: %1', $responseData['id_sale']);
-                    $orderPayment = $order->getPayment();
-                    $orderPayment->setTransactionId($responseData['id_sale']);
-                    $orderPayment->setIsTransactionClosed(true);
                     $orderPayment->addTransaction('capture');
+                    $orderStatus = $this->generalConfigProvider->getClearedOrderStatus();
+                    $order->setStatus($orderStatus);
+                    $orderPayment->setIsTransactionClosed(true);
+                    $this->orderResource->save($order);
                 }
 
             } else {
@@ -191,11 +188,9 @@ class Blik0 extends AbstractAdapter
                 );
 
                 $this->logger->error((string) $comment);
-
+                $this->transactionHandler->setOrderState($order, $orderStatus, null);
+                $this->orderResource->save($order);
             }
-
-            $this->transactionHandler->setOrderState($order, $orderStatus, null);
-            // $this->orderResource->save($order);
         }
 
         $this->handleRedirect($success, $response);

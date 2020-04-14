@@ -80,7 +80,7 @@ class Start extends Action
     {
         $params = $this->getRequest()->getParams();
 
-        $this->logger->info("PAYMENT START\n". \json_encode($params));
+        $this->logger->info(">>> ========== PAYMENT START ========== <<<\n". \json_encode($params));
 
         if (isset($params['method_code'])) {
             $paymentMethodCode = $params['method_code'];
